@@ -56,14 +56,14 @@ input{width:100%;background:#223854;border:none;color:#fff;padding:5px;border-ra
   <div id="ml"></div>
 </div>
 <script>
-let st='i',ev='50 FREE',t0=0,ms=0,ti,ci,d=JSON.parse(localStorage.getItem('pss')||'{"t":[],"l":{},"m":[]}');
+let st='i',ev='50 FREE',t0=0,ms=0,ti,ci,d=JSON.parse(localStorage.getItem('pss'))||{t:new Array(),l:{},m:new Array()};
 const sv=()=>localStorage.setItem('pss',JSON.stringify(d));
 function tab(x,b){document.querySelectorAll('.scr,.tab').forEach(e=>e.classList.remove('active'));document.getElementById(x).classList.add('active');b.classList.add('active');if(x=='c')rc();if(x=='m')rm();}
 const vi=document.getElementById('vi');
 vi.oninput=vi.onchange=()=>{
   let v=vi.value.toLowerCase(),dm=v.match(/\b(25|50|100|200)\b/),sm=v.match(/\b(free|back|breast|fly|im)\b/),am=v.match(/\b(start|go|stop|done)\b/);
-  if(dm||sm){ev=(dm?dm[1]:ev.split(' ')[0])+' '+(sm?sm[1].toUpperCase():ev.split(' ')[1]);document.getElementById('ev').textContent=ev;}
-  if(am){let act=am[1];vi.value='';vi.blur();if((act=='start'||act=='go')&&st!='r'&&st!='c')cd();if((act=='stop'||act=='done')&&st=='r')stp();}
+  if(dm||sm){ev=(dm?dm.at(1):ev.split(' ').at(0))+' '+(sm?sm.at(1).toUpperCase():ev.split(' ').at(1));document.getElementById('ev').textContent=ev;}
+  if(am){let act=am.at(1);vi.value='';vi.blur();if((act=='start'||act=='go')&&st!='r'&&st!='c')cd();if((act=='stop'||act=='done')&&st=='r')stp();}
 };
 function tap(){if(st=='r')stp();else if(st=='i'||st=='s')cd();else{clearInterval(ci);rst();}}
 function cd(){st='c';ms=0;let s=5,b=document.getElementById('tb');b.className='cd';document.getElementById('st').textContent='GET READY!';document.getElementById('tm').textContent='05.00';ci=setInterval(()=>{s--;if(s>0)document.getElementById('tm').textContent='0'+s+'.00';else{clearInterval(ci);run();}},1000);}
@@ -74,7 +74,7 @@ function save(){if(ms>0){d.t.push({e:ev,m:ms});sv();rst();document.getElementByI
 function rst(){st='i';document.getElementById('tb').className='';document.getElementById('st').textContent='READY (5S DELAY)';}
 function fmt(x){let s=x/1000,m=Math.floor(s/60),r=(s%60).toFixed(2).padStart(5,'0');return m>0?m+':'+r:r;}
 function rc(){document.getElementById('cl').innerHTML=d.t.length?d.t.map(i=>{let p=d.l[i.e],df='First!';if(p){let k=(i.m-p)/1000;df=k<0?`<b style="color:#30d158">${Math.abs(k).toFixed(2)}s FASTER</b>`:`<b style="color:#ff453a">+${k.toFixed(2)}s SLOWER</b>`;}return `<div class="cd"><b>${i.e}</b> ${fmt(i.m)}<br>${df}</div>`;}).join(''):'<div class="cd">No swims today</div>';}
-function endC(){d.t.forEach(i=>{if(!d.l[i.e]||i.m<d.l[i.e])d.l[i.e]=i.m;});d.t=[];sv();rc();}
+function endC(){d.t.forEach(i=>{if(!d.l[i.e]||i.m<d.l[i.e])d.l[i.e]=i.m;});d.t=new Array();sv();rc();}
 function addM(){let n=document.getElementById('mn').value.trim();if(!n)return;d.m.unshift({n,d:document.getElementById('md').value,t:document.getElementById('mt').value});sv();document.getElementById('mn').value='';document.getElementById('mt').value='';rm();}
 function rm(){document.getElementById('ml').innerHTML=d.m.length?d.m.map(x=>`<div class="cd"><b>${x.n}</b> (${x.d||'TBD'})<br><span style="color:#30d158">${x.t}</span></div>`).join(''):'<div class="cd">No meets yet</div>';}
 </script>
