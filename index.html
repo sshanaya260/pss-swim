@@ -1,278 +1,82 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>PSS Swim Watch</title>
+<meta name="disabled-adaptations" content="watch">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif; }
-  body { background: #000; color: #fff; min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between; padding: 6px; user-select: none; }
-  .tabs { display: flex; gap: 4px; margin-bottom: 6px; }
-  .tab { flex: 1; background: #1c1c1e; color: #8e8e93; border: none; padding: 6px 2px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; }
-  .tab.active { background: #0a84ff; color: #fff; }
-  .screen { display: none; flex-direction: column; gap: 6px; flex: 1; }
-  .screen.active { display: flex; }
-  .voice-box { background: #1c1c1e; border: 2px solid #0a84ff; border-radius: 12px; padding: 6px; text-align: center; }
-  .voice-label { font-size: 10px; color: #64d2ff; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 3px; }
-  #voiceInput { width: 100%; background: #2c2c2e; border: none; border-radius: 8px; color: #fff; font-size: 13px; font-weight: 600; padding: 7px 6px; text-align: center; outline: none; }
-  #voiceInput::placeholder { color: #8e8e93; font-size: 11px; }
-  .event-badge { text-align: center; font-size: 13px; font-weight: 800; color: #30d158; background: #112b18; padding: 4px; border-radius: 8px; }
-  .timer-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #1c1c1e; border-radius: 14px; padding: 8px 4px; cursor: pointer; border: 2px solid transparent; transition: 0.15s; }
-  .timer-area.countdown { background: #3a2500; border-color: #ff9f0a; }
-  .timer-area.running { background: #3a0d0d; border-color: #ff453a; }
-  .status-text { font-size: 11px; font-weight: 700; color: #8e8e93; text-transform: uppercase; }
-  .timer-area.countdown .status-text { color: #ff9f0a; }
-  .timer-area.running .status-text { color: #ff453a; }
-  .time-display { font-size: 32px; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -0.5px; margin: 2px 0; }
-  .tap-hint { font-size: 10px; color: #aeaeb2; }
-  .offset-row { display: flex; gap: 4px; align-items: center; justify-content: space-between; }
-  .btn-sm { flex: 1; background: #2c2c2e; color: #fff; border: none; border-radius: 8px; padding: 6px 2px; font-size: 11px; font-weight: 700; cursor: pointer; }
-  .btn-save { background: #30d158; color: #000; }
-  .card { background: #1c1c1e; border-radius: 10px; padding: 7px; font-size: 11px; margin-bottom: 5px; }
-  .card-title { font-weight: 800; color: #fff; display: flex; justify-content: space-between; }
-  .faster { color: #30d158; font-weight: 700; }
-  .slower { color: #ff453a; font-weight: 700; }
-  .neutral { color: #8e8e93; }
-  .scroll-area { overflow-y: auto; max-height: 155px; }
-  .meet-form { display: flex; flex-direction: column; gap: 4px; margin-bottom: 6px; }
-  .meet-form input { background: #2c2c2e; border: none; color: #fff; padding: 6px; border-radius: 6px; font-size: 11px; }
-  .btn-full { width: 100%; background: #0a84ff; color: #fff; border: none; padding: 7px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; }
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,sans-serif}
+body{background:#0b192c;color:#fff;padding:4px}
+.tabs{display:flex;gap:3px;margin-bottom:4px}
+.tab{flex:1;background:#1e2d42;color:#9ab3d5;border:none;padding:6px 0;border-radius:6px;font-size:10px;font-weight:800}
+.tab.active{background:#0a84ff;color:#fff}
+.scr{display:none;flex-direction:column;gap:4px}
+.scr.active{display:flex}
+#vi{width:100%;background:#223854;border:2px solid #0a84ff;border-radius:6px;color:#fff;font-size:12px;font-weight:700;padding:5px;text-align:center}
+#ev{text-align:center;font-size:12px;font-weight:800;color:#30d158;background:#113322;padding:3px;border-radius:6px}
+#tb{background:#15263d;border-radius:10px;padding:10px 2px;text-align:center;border:2px solid #2b4568}
+#tb.cd{background:#472d00;border-color:#ff9f0a}
+#tb.rn{background:#4a1212;border-color:#ff453a}
+#st{font-size:9px;font-weight:800;color:#9ab3d5}
+#tm{font-size:28px;font-weight:800;margin:2px 0}
+.row{display:flex;gap:3px}
+.btn{flex:1;background:#1e2d42;color:#fff;border:none;border-radius:6px;padding:6px 0;font-size:10px;font-weight:800}
+.sv{background:#30d158;color:#000}
+.cd{background:#15263d;border-radius:6px;padding:5px;font-size:10px;margin-bottom:3px}
+input{width:100%;background:#223854;border:none;color:#fff;padding:5px;border-radius:5px;font-size:10px;margin-bottom:3px}
 </style>
 </head>
 <body>
 <div class="tabs">
-  <button class="tab active" onclick="showTab('swim', this)">SWIM</button>
-  <button class="tab" onclick="showTab('class', this)">CLASS</button>
-  <button class="tab" onclick="showTab('meets', this)">MEETS</button>
+  <button class="tab active" onclick="tab('s',this)">SWIM</button>
+  <button class="tab" onclick="tab('c',this)">CLASS</button>
+  <button class="tab" onclick="tab('m',this)">MEETS</button>
 </div>
-<div id="swim" class="screen active">
-  <div class="voice-box">
-    <div class="voice-label">Tap &amp; Say: "50 Free Start"</div>
-    <input id="voiceInput" type="text" placeholder="Tap mic on watch..." autocomplete="off">
+<div id="s" class="scr active">
+  <input id="vi" placeholder="Say: 50 Free Start" autocomplete="off">
+  <div id="ev">50 FREE</div>
+  <div id="tb" onclick="tap()">
+    <div id="st">READY (5S DELAY)</div>
+    <div id="tm">00.00</div>
   </div>
-  <div class="event-badge" id="currentEvent">50 FREE</div>
-  <div class="timer-area" id="timerBox" onclick="handleTimerTap()">
-    <div class="status-text" id="statusText">READY (5S DELAY)</div>
-    <div class="time-display" id="timeDisplay">00.00</div>
-    <div class="tap-hint" id="tapHint">Speak command or tap to start</div>
-  </div>
-  <div class="offset-row">
-    <button class="btn-sm" onclick="adjustTime(-0.2)">-0.2s</button>
-    <button class="btn-sm" onclick="adjustTime(-0.5)">-0.5s</button>
-    <button class="btn-sm btn-save" onclick="saveCurrentSwim()">SAVE</button>
+  <div class="row">
+    <button class="btn" onclick="adj(-0.2)">-0.2s</button>
+    <button class="btn" onclick="adj(-0.5)">-0.5s</button>
+    <button class="btn sv" onclick="save()">SAVE</button>
   </div>
 </div>
-<div id="class" class="screen">
-  <div style="font-size:11px; font-weight:800; color:#64d2ff; text-align:center;">CLASS PROGRESS REPORT</div>
-  <div class="scroll-area" id="classList"></div>
-  <button class="btn-sm" style="background:#3a0d0d; color:#ff453a;" onclick="finishClassSession()">END CLASS &amp; LOCK BENCHMARK</button>
+<div id="c" class="scr">
+  <div id="cl"></div>
+  <button class="btn" style="background:#4a1212;color:#ff453a" onclick="endC()">END CLASS</button>
 </div>
-<div id="meets" class="screen">
-  <div class="meet-form">
-    <input id="meetName" type="text" placeholder="Meet Name (e.g. PSS Champs)">
-    <input id="meetDate" type="date">
-    <input id="meetTime" type="text" placeholder="Official Time (e.g. 50 Free: 31.42)">
-    <button class="btn-full" onclick="addMeet()">+ ADD OFFICIAL MEET</button>
-  </div>
-  <div class="scroll-area" id="meetsList"></div>
+<div id="m" class="scr">
+  <input id="mn" placeholder="Meet Name">
+  <input id="md" type="date">
+  <input id="mt" placeholder="Official Time">
+  <button class="btn" style="background:#0a84ff" onclick="addM()">+ ADD MEET</button>
+  <div id="ml"></div>
 </div>
 <script>
-  let state = 'idle';
-  let currentEvent = '50 FREE';
-  let startTime = 0;
-  let elapsedMs = 0;
-  let timerInterval = null;
-  let countdownInterval = null;
-
-  let data = JSON.parse(localStorage.getItem('pssSwimData') || '{"today":[],"lastClass":{},"meets":[]}');
-
-  function saveData() {
-    localStorage.setItem('pssSwimData', JSON.stringify(data));
-  }
-
-  function showTab(id, btn) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    btn.classList.add('active');
-    if (id === 'class') renderClassReport();
-    if (id === 'meets') renderMeets();
-  }
-
-  const voiceInput = document.getElementById('voiceInput');
-  voiceInput.addEventListener('input', () => processVoice(voiceInput.value));
-  voiceInput.addEventListener('change', () => processVoice(voiceInput.value));
-
-  function processVoice(raw) {
-    const text = raw.toLowerCase().trim();
-    if (!text) return;
-
-    const distMatch = text.match(/\b(25|50|100|200)\b/);
-    const strokeMatch = text.match(/\b(free|freestyle|back|backstroke|breast|breaststroke|fly|butterfly|im)\b/);
-    const actionMatch = text.match(/\b(start|go|stop|finish|done)\b/);
-
-    if (distMatch || strokeMatch) {
-      let d = distMatch ? distMatch[1] : currentEvent.split(' ')[0];
-      let s = strokeMatch ? strokeMatch[1].toUpperCase() : currentEvent.split(' ')[1];
-      if (s === 'FREESTYLE') s = 'FREE';
-      if (s === 'BACKSTROKE') s = 'BACK';
-      if (s === 'BREASTSTROKE') s = 'BREAST';
-      if (s === 'BUTTERFLY') s = 'FLY';
-      currentEvent = d + ' ' + s;
-      document.getElementById('currentEvent').textContent = currentEvent;
-    }
-
-    if (actionMatch) {
-      const act = actionMatch[1];
-      if ((act === 'start' || act === 'go') && (state === 'idle' || state === 'stopped')) {
-        voiceInput.value = '';
-        voiceInput.blur();
-        startFiveSecondCountdown();
-      } else if ((act === 'stop' || act === 'finish' || act === 'done') && state === 'running') {
-        voiceInput.value = '';
-        voiceInput.blur();
-        stopStopwatch();
-      }
-    }
-  }
-
-  function handleTimerTap() {
-    if (state === 'running') {
-      stopStopwatch();
-    } else if (state === 'idle' || state === 'stopped') {
-      startFiveSecondCountdown();
-    } else if (state === 'countdown') {
-      clearInterval(countdownInterval);
-      resetToIdle();
-    }
-  }
-
-  function startFiveSecondCountdown() {
-    state = 'countdown';
-    elapsedMs = 0;
-    let sec = 5;
-    const box = document.getElementById('timerBox');
-    box.className = 'timer-area countdown';
-    document.getElementById('statusText').textContent = 'GET READY!';
-    document.getElementById('timeDisplay').textContent = '0' + sec + '.00';
-    document.getElementById('tapHint').textContent = 'Push off at 0!';
-
-    countdownInterval = setInterval(() => {
-      sec--;
-      if (sec > 0) {
-        document.getElementById('timeDisplay').textContent = '0' + sec + '.00';
-      } else {
-        clearInterval(countdownInterval);
-        startStopwatch();
-      }
-    }, 1000);
-  }
-
-  function startStopwatch() {
-    state = 'running';
-    startTime = performance.now();
-    const box = document.getElementById('timerBox');
-    box.className = 'timer-area running';
-    document.getElementById('statusText').textContent = 'SWIMMING...';
-    document.getElementById('tapHint').textContent = 'TAP ANYWHERE TO STOP';
-
-    timerInterval = setInterval(() => {
-      elapsedMs = performance.now() - startTime;
-      document.getElementById('timeDisplay').textContent = formatTime(elapsedMs);
-    }, 31);
-  }
-
-  function stopStopwatch() {
-    clearInterval(timerInterval);
-    elapsedMs = performance.now() - startTime;
-    state = 'stopped';
-    const box = document.getElementById('timerBox');
-    box.className = 'timer-area';
-    document.getElementById('statusText').textContent = 'FINISHED (ADJUST/SAVE)';
-    document.getElementById('timeDisplay').textContent = formatTime(elapsedMs);
-    document.getElementById('tapHint').textContent = 'Tap SAVE or adjust wall delay';
-  }
-
-  function adjustTime(secDelta) {
-    if (state !== 'stopped') return;
-    elapsedMs = Math.max(0, elapsedMs + secDelta * 1000);
-    document.getElementById('timeDisplay').textContent = formatTime(elapsedMs);
-  }
-
-  function saveCurrentSwim() {
-    if (elapsedMs <= 0) return;
-    data.today.push({ event: currentEvent, ms: elapsedMs, date: new Date().toLocaleDateString() });
-    saveData();
-    resetToIdle();
-    document.getElementById('statusText').textContent = 'SAVED TO CLASS!';
-  }
-
-  function resetToIdle() {
-    state = 'idle';
-    const box = document.getElementById('timerBox');
-    box.className = 'timer-area';
-    document.getElementById('statusText').textContent = 'READY (5S DELAY)';
-    document.getElementById('tapHint').textContent = 'Speak command or tap to start';
-  }
-
-  function formatTime(ms) {
-    const totalSec = ms / 1000;
-    const mins = Math.floor(totalSec / 60);
-    const secs = (totalSec % 60).toFixed(2).padStart(5, '0');
-    return mins > 0 ? mins + ':' + secs : secs;
-  }
-
-  function renderClassReport() {
-    const list = document.getElementById('classList');
-    if (data.today.length === 0) {
-      list.innerHTML = '<div class="card neutral">No swims saved in today\'s class yet.</div>';
-      return;
-    }
-    list.innerHTML = data.today.map(item => {
-      const prev = data.lastClass[item.event];
-      let diffHtml = '<span class="neutral">First logged!</span>';
-      if (prev) {
-        const diff = (item.ms - prev) / 1000;
-        if (diff < 0) diffHtml = '<span class="faster">' + Math.abs(diff).toFixed(2) + 's FASTER</span>';
-        else if (diff > 0) diffHtml = '<span class="slower">+' + diff.toFixed(2) + 's SLOWER</span>';
-        else diffHtml = '<span class="neutral">Exact tie!</span>';
-      }
-      return '<div class="card"><div class="card-title"><span>' + item.event + '</span><span>' + formatTime(item.ms) + '</span></div><div>Vs last class: ' + diffHtml + '</div></div>';
-    }).join('');
-  }
-
-  function finishClassSession() {
-    data.today.forEach(item => {
-      if (!data.lastClass[item.event] || item.ms < data.lastClass[item.event]) {
-        data.lastClass[item.event] = item.ms;
-      }
-    });
-    data.today = [];
-    saveData();
-    renderClassReport();
-    alert('Class saved! Next class will compare against these times.');
-  }
-
-  function addMeet() {
-    const name = document.getElementById('meetName').value.trim();
-    const date = document.getElementById('meetDate').value;
-    const time = document.getElementById('meetTime').value.trim();
-    if (!name) return;
-    data.meets.unshift({ name, date, time });
-    saveData();
-    document.getElementById('meetName').value = '';
-    document.getElementById('meetTime').value = '';
-    renderMeets();
-  }
-
-  function renderMeets() {
-    const list = document.getElementById('meetsList');
-    if (data.meets.length === 0) {
-      list.innerHTML = '<div class="card neutral">No official meets added yet.</div>';
-      return;
-    }
-    list.innerHTML = data.meets.map(m => '<div class="card"><div class="card-title"><span>' + m.name + '</span><span>' + (m.date || 'TBD') + '</span></div><div class="faster">' + (m.time || 'Upcoming Meet') + '</div></div>').join('');
-  }
+let st='i',ev='50 FREE',t0=0,ms=0,ti,ci,d=JSON.parse(localStorage.getItem('pss')||'{"t":[],"l":{},"m":[]}');
+const sv=()=>localStorage.setItem('pss',JSON.stringify(d));
+function tab(x,b){document.querySelectorAll('.scr,.tab').forEach(e=>e.classList.remove('active'));document.getElementById(x).classList.add('active');b.classList.add('active');if(x=='c')rc();if(x=='m')rm();}
+const vi=document.getElementById('vi');
+vi.oninput=vi.onchange=()=>{
+  let v=vi.value.toLowerCase(),dm=v.match(/\b(25|50|100|200)\b/),sm=v.match(/\b(free|back|breast|fly|im)\b/),am=v.match(/\b(start|go|stop|done)\b/);
+  if(dm||sm){ev=(dm?dm[1]:ev.split(' ')[0])+' '+(sm?sm[1].toUpperCase():ev.split(' ')[1]);document.getElementById('ev').textContent=ev;}
+  if(am){let act=am[1];vi.value='';vi.blur();if((act=='start'||act=='go')&&st!='r'&&st!='c')cd();if((act=='stop'||act=='done')&&st=='r')stp();}
+};
+function tap(){if(st=='r')stp();else if(st=='i'||st=='s')cd();else{clearInterval(ci);rst();}}
+function cd(){st='c';ms=0;let s=5,b=document.getElementById('tb');b.className='cd';document.getElementById('st').textContent='GET READY!';document.getElementById('tm').textContent='05.00';ci=setInterval(()=>{s--;if(s>0)document.getElementById('tm').textContent='0'+s+'.00';else{clearInterval(ci);run();}},1000);}
+function run(){st='r';t0=performance.now();let b=document.getElementById('tb');b.className='rn';document.getElementById('st').textContent='SWIMMING...';ti=setInterval(()=>{ms=performance.now()-t0;document.getElementById('tm').textContent=fmt(ms);},31);}
+function stp(){clearInterval(ti);ms=performance.now()-t0;st='s';document.getElementById('tb').className='';document.getElementById('st').textContent='FINISHED';document.getElementById('tm').textContent=fmt(ms);}
+function adj(x){if(st=='s'){ms=Math.max(0,ms+x*1000);document.getElementById('tm').textContent=fmt(ms);}}
+function save(){if(ms>0){d.t.push({e:ev,m:ms});sv();rst();document.getElementById('st').textContent='SAVED!';}}
+function rst(){st='i';document.getElementById('tb').className='';document.getElementById('st').textContent='READY (5S DELAY)';}
+function fmt(x){let s=x/1000,m=Math.floor(s/60),r=(s%60).toFixed(2).padStart(5,'0');return m>0?m+':'+r:r;}
+function rc(){document.getElementById('cl').innerHTML=d.t.length?d.t.map(i=>{let p=d.l[i.e],df='First!';if(p){let k=(i.m-p)/1000;df=k<0?`<b style="color:#30d158">${Math.abs(k).toFixed(2)}s FASTER</b>`:`<b style="color:#ff453a">+${k.toFixed(2)}s SLOWER</b>`;}return `<div class="cd"><b>${i.e}</b> ${fmt(i.m)}<br>${df}</div>`;}).join(''):'<div class="cd">No swims today</div>';}
+function endC(){d.t.forEach(i=>{if(!d.l[i.e]||i.m<d.l[i.e])d.l[i.e]=i.m;});d.t=[];sv();rc();}
+function addM(){let n=document.getElementById('mn').value.trim();if(!n)return;d.m.unshift({n,d:document.getElementById('md').value,t:document.getElementById('mt').value});sv();document.getElementById('mn').value='';document.getElementById('mt').value='';rm();}
+function rm(){document.getElementById('ml').innerHTML=d.m.length?d.m.map(x=>`<div class="cd"><b>${x.n}</b> (${x.d||'TBD'})<br><span style="color:#30d158">${x.t}</span></div>`).join(''):'<div class="cd">No meets yet</div>';}
 </script>
 </body>
 </html>
