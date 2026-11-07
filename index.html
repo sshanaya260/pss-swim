@@ -11,7 +11,7 @@ body{background:#0b192c;color:#fff;padding:4px}
 .tab.active{background:#0a84ff;color:#fff}
 .scr{display:none;flex-direction:column;gap:4px}
 .scr.active{display:flex}
-#vi{width:100%;background:#223854;border:2px solid #0a84ff;border-radius:6px;color:#fff;font-size:10px;font-weight:700;padding:6px 3px;text-align:center}
+#vi{width:100%;background:#223854;border:2px solid #0a84ff;border-radius:6px;color:#fff;font-size:11px;font-weight:700;padding:6px 3px;text-align:center}
 #ev{text-align:center;font-size:12px;font-weight:800;color:#30d158;background:#113322;padding:3px;border-radius:6px}
 #tb{background:#15263d;border-radius:10px;padding:10px 2px;text-align:center;border:2px solid #2b4568}
 #tb.cd{background:#472d00;border-color:#ff9f0a}
@@ -32,7 +32,7 @@ input{width:100%;background:#223854;border:none;color:#fff;padding:5px;border-ra
   <button class="tab" onclick="tab('m',this)">MEETS</button>
 </div>
 <div id="s" class="scr active">
-  <input id="vi" type="text" placeholder="Say: [Meters] + [Stroke] + [Start/Stop]" autocomplete="off">
+  <input id="vi" type="text" placeholder="___ + ___ + ___" autocomplete="off">
   <div id="ev">50 FREE</div>
   <div id="tb" onclick="tap()">
     <div id="st">READY (5S DELAY)</div>
@@ -61,7 +61,7 @@ const sv=()=>localStorage.setItem('pss',JSON.stringify(d));
 function tab(x,b){document.querySelectorAll('.scr,.tab').forEach(e=>e.classList.remove('active'));document.getElementById(x).classList.add('active');b.classList.add('active');if(x=='c')rc();if(x=='m')rm();}
 const vi=document.getElementById('vi');
 function runVoice(){
-  let v=vi.value.toLowerCase().replace(/[^a-z0-9\s]/g,' ').replace(/\btwenty five\b/g,'25').replace(/\bfifty\b/g,'50').replace(/\btwo hundred\b/g,'200').replace(/\b(one )?hundred\b/g,'100').replace(/\bi am\b/g,'im');
+  let v=vi.value.toLowerCase().replace(/[^a-z0-9\s]/g,' ').replace(/\bfifty three\b/g,'50 free').replace(/\b53\b/g,'50 free').replace(/\btwenty five\b/g,'25').replace(/\bfifty\b/g,'50').replace(/\btwo hundred\b/g,'200').replace(/\b(one )?hundred\b/g,'100').replace(/\bi am\b/g,'im');
   if(!v.trim())return;
   let dm=v.match(/\b(25|50|100|200)\b/),sm=v.match(/\b(free|freestyle|freeze|back|backstroke|black|breast|breaststroke|brass|fly|butterfly|fry|im)\b/),am=v.match(/\b(start|go|stop|finish|done)\b/);
   if(dm||sm){
@@ -76,7 +76,7 @@ function runVoice(){
   if(am){
     let act=am.at(1);vi.value='';
     if((act=='start'||act=='go')&&st!='r'&&st!='c')cd();
-    if((act=='stop'||act=='finish'||act=='done')&&st=='r')stp();
+    if((act=='stop'||act=='done'||act=='finish')&&st=='r')stp();
   }
 }
 vi.oninput=vi.onchange=vi.onblur=vi.onkeyup=runVoice;
